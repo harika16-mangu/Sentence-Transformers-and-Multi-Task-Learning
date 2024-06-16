@@ -1,2 +1,1 @@
-def __init__():
-    pass
+from .Multitask import MultitaskModel

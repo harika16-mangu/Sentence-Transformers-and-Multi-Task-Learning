@@ -4,7 +4,6 @@ from sentence_transformers import SentenceTransformer, util
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
-import umap
 
 def encode_sentences(model, sentences):
     # Encode sentences into embeddings
@@ -58,7 +57,7 @@ def main():
     ]
 
     # Load a pre-trained Sentence Transformer model from Hugging Face
-    model = SentenceTransformer('bert-base-uncased')  # You can choose any model available on HF's Model Hub
+    model = SentenceTransformer('all-MiniLM-L12-v2')  # You can choose any model available on HF's Model Hub
 
     # Encode sentences into embeddings
     embeddings = encode_sentences(model, sentences)

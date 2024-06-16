@@ -3,3 +3,5 @@ numpy
 transformers
 datasets
 matplotlib
+sentence-transformers
+accelerate

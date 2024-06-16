@@ -1,47 +1,26 @@
-# train.py
+# test_sentence_transformer_huggingface.py
 
-import torch
-from models.sentencetransformer import SentenceTransformer  # Correct import
-from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
-from scipy.spatial.distance import cosine
+from sentence_transformers import SentenceTransformer, util
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+import umap
 
-def showcase_embeddings():
-    sentences = [
-        "I like watching tv shows",
-        "I watch and play video games.",
-        "Whiskers the cat chased the elusive red dot around the living room.",
-        "The mountain stood tall and silent, shrouded in a blanket of fog.",
-        "Quantum entanglement challenges our classical understanding of physics."
-    ]
-    
-    # Initialize the Sentence Transformer model using the base model
-    model = SentenceTransformer()
+def encode_sentences(model, sentences):
+    # Encode sentences into embeddings
     embeddings = model.encode(sentences)
-    
-    # Compute cosine similarities
-    print("Cosine Similarities:")
-    num_sentences = len(sentences)
-    cosine_sim_matrix = np.zeros((num_sentences, num_sentences))
-    
-    for i in range(num_sentences):
-        for j in range(num_sentences):
-            if i != j:
-                sim = 1 - cosine(embeddings[i], embeddings[j])
-                cosine_sim_matrix[i][j] = sim
-                print(f"Cosine similarity between sentence {i+1} and {j+1}: {sim:.4f}")
-            else:
-                cosine_sim_matrix[i][j] = 1  # Similarity with itself
+    return embeddings
 
-    # Display the cosine similarity matrix
-    print("\nCosine Similarity Matrix:")
-    print(cosine_sim_matrix)
+def compute_cosine_similarity(embeddings):
+    # Compute the cosine similarity matrix
+    cosine_sim_matrix = util.cos_sim(embeddings, embeddings).numpy()
+    return cosine_sim_matrix
 
-    # Reduce dimensions using t-SNE
-    tsne = TSNE(n_components=2, random_state=42, perplexity=4)
+def visualize_embeddings_tsne(embeddings, sentences):
+    # Reduce dimensionality for visualization using t-SNE
+    tsne = TSNE(n_components=2, random_state=42, perplexity=2)
     reduced_embeddings = tsne.fit_transform(embeddings)
-    
+
     # Plot the embeddings
     plt.figure(figsize=(10, 6))
     for i, label in enumerate(sentences):
@@ -55,8 +34,47 @@ def showcase_embeddings():
     plt.grid(True)
     plt.show()
 
+def display_cosine_similarity_matrix(cosine_sim_matrix, sentences):
+    # Print the cosine similarity matrix with sentence labels
+    print("Cosine Similarity Matrix:\n")
+    print(" ", end=" ")
+    for i in range(len(sentences)):
+        print(f"{i:8}", end=" ")
+    print()
+    for i in range(len(cosine_sim_matrix)):
+        print(f"{i} ", end=" ")
+        for j in range(len(cosine_sim_matrix[i])):
+            print(f"{cosine_sim_matrix[i][j]:.4f} ", end=" ")
+        print()
+
 def main():
-    showcase_embeddings()
+    # Sample sentences
+    sentences = [
+        "Fetch Rewards offers a unique app-based loyalty program for grocery shoppers.",    
+        "Fetch Rewards simplifies earning and redeeming rewards through everyday grocery purchases.",
+        "The service was terrible and I am very disappointed.",
+        "It's an average experience, nothing special.",
+        "Quantum entanglement challenges our classical understanding of physics."
+    ]
+
+    # Load a pre-trained Sentence Transformer model from Hugging Face
+    model = SentenceTransformer('bert-base-uncased')  # You can choose any model available on HF's Model Hub
+
+    # Encode sentences into embeddings
+    embeddings = encode_sentences(model, sentences)
+
+    # Compute cosine similarity matrix
+    cosine_sim_matrix = compute_cosine_similarity(embeddings)
+
+    # Display the cosine similarity matrix
+    display_cosine_similarity_matrix(cosine_sim_matrix, sentences)
+
+    # Save embeddings (optional)
+    np.save('embeddings_huggingface.npy', embeddings)
+
+    # Visualize embeddings using t-SNE
+    visualize_embeddings_tsne(embeddings, sentences)
+
 
 if __name__ == "__main__":
     main()

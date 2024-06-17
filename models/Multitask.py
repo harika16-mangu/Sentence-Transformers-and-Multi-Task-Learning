@@ -16,7 +16,7 @@ class MultitaskModel(nn.Module):
 
         if task[0] == 0:  # Hate Speech
             logits = self.classifier_hate_speech(pooled_output)
-        elif task[0] == 1:  # Sentiment Analysis
+        elif task[0] == 1:  # Sentiment Analysis 
             logits = self.classifier_sentiment(pooled_output)
 
         loss = None

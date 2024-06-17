@@ -1,1 +1,2 @@
 from .MultiTaskTrainer import multi_task_train
+from .CustomMultiTaskTrainer import custom_multi_task_train

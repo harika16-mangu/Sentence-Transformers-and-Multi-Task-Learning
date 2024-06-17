@@ -7,7 +7,7 @@ from sklearn.utils import resample
 # data collator 
 
 class BaseDataset(Dataset):
-    def __init__(self, csv_file, model_name, text_column, label_column, task_id, max_samples_per_dataset=500):
+    def __init__(self, csv_file, model_name, text_column, label_column, task_id, max_samples_per_dataset=10):
         self.data = pd.read_csv(csv_file, encoding='unicode_escape')
         self.data.dropna(inplace=True)
 
@@ -15,10 +15,6 @@ class BaseDataset(Dataset):
         if max_samples_per_dataset:
             self.data = self._sample_data(self.data, label_column, max_samples_per_dataset)
         
-        # try:
-        #     print(self.data['Label'].value_counts())
-        # except:
-        #     print(self.data['sentiment'].value_counts())
         
         self.texts = self.data[text_column].tolist()
         self.labels = self.data[label_column].tolist()

@@ -1,5 +1,6 @@
 #misc
 venv/
+output/
 data/
 # Notebooks
 etc/
